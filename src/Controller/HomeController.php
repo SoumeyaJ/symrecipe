@@ -11,7 +11,7 @@ use Symfony\Component\Routing\Annotation\Route;
         #[Route('/', 'home.index', methods: ['GET'])]
         public function index(): Response
         {
-            return $this->render('home.html.twig');
+            return $this->render('pages/home.html.twig');
 
         }
     }
