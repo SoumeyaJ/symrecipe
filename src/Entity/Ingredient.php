@@ -6,7 +6,7 @@ use App\Repository\IngredientRepository;
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
-// use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\Id;
 
 #[ORM\Entity(repositoryClass: IngredientRepository::class)]
 class Ingredient
@@ -33,11 +33,12 @@ class Ingredient
     #[Assert\NotNull()]
 
 
-    //Constucror
+    // Constuctor
     // public function __construct()
     // {
     //     $this->createdAt = new \DateTimeImmutable();
     // }
+
     public function getId(): ?int
     {
         return $this->id;
