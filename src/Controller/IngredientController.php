@@ -41,7 +41,7 @@ class IngredientController extends AbstractController
         ]);
     }
     /**
-     * this controller show a form which create an ingredient
+     *  this controller allow us to create a new ingredient
      *
      * @param Request $request
      * @param EntityManagerInterface $manager
@@ -77,6 +77,15 @@ class IngredientController extends AbstractController
     }
 
     #[Route('/ingredient/edition/{id}', 'ingredient.edit', methods: ['GET', 'POST'])]
+    /**
+     *  this controller allow us to edit ingredients
+     *
+     * @param IngredientRepository $repository
+     * @param integer $id
+     * @param Request $request
+     * @param EntityManagerInterface $manager
+     * @return Response
+     */
     public function edit(
         IngredientRepository $repository, 
         int $id, Request $request, 
