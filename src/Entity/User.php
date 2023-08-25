@@ -6,8 +6,9 @@ use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
-use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Validator\Constraints as Assert;
+
 
 #[UniqueEntity('email')]
 #[ORM\Entity(repositoryClass: UserRepository::class)]
@@ -37,19 +38,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Assert\NotBlank()]
     private array $roles = [];
 
-
     private ?string $plainPassword = null;
-
+    
     /**
      * @var string The hashed password
      */
     #[ORM\Column]
     #[Assert\NotBlank()]
-    private ?string $password = null;
+    private ?string $password = 'password';
 
-
-    #[ORM\Column]
-    #[Assert\NotNull()]
+   
     private ?\DateTimeImmutable $createdAt = null;
 
     public function __construct()
@@ -131,19 +129,19 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function getPlainPassword(): string
     {
-        return $this->password;
+        return $this->plainPassword;
     }
 
     public function setPlainPassword(string $password): static
     {
-        $this->password = $password;
+        $this->plainPassword = $password;
 
         return $this;
     }
 
-    /**
-     * @see PasswordAuthenticatedUserInterface
-     */
+    // /**
+    //  * @see PasswordAuthenticatedUserInterface
+    //  */
     public function getPassword(): string
     {
         return $this->password;
