@@ -9,8 +9,10 @@ use App\Repository\RecipeRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Security\Core\Security;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 
@@ -25,7 +27,9 @@ class RecipeController extends AbstractController
      * @param Request $request
      * @return Response
      */
+    #[IsGranted('ROLE_USER')]
     #[Route('/recette', name: 'recipe.index', methods: ['GET'])]
+    
     public function index(
         RecipeRepository $repository,
         PaginatorInterface $paginator, 
@@ -33,7 +37,7 @@ class RecipeController extends AbstractController
     ): Response
     {
         $recipes = $paginator->paginate(
-            $repository->findAll(),
+            $repository->findBy(['user' => $this->getUser()]),
             $request->query->getInt('page', 1),
             10
         );
@@ -42,7 +46,7 @@ class RecipeController extends AbstractController
         ]);
     }
  
-   
+    #[IsGranted('ROLE_USER')]
     #[Route('/recette/création', 'recipe.new', methods: ['GET', 'POST'])]
     /**
      * this controller allow us to create a new recipe
@@ -60,6 +64,7 @@ class RecipeController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             //  dd($form->getData());
             $recipe = $form->getData();
+            $recipe->setUser($this->getUser());
 
             $manager->persist($recipe);
             $manager->flush();
@@ -76,24 +81,25 @@ class RecipeController extends AbstractController
              'form' => $form->createView()
         ]);
     }
-
+     /**
+    *  this controller allow us to edit recipes
+    *
+    * @param IngredientRepository $repository
+    * @param integer $id
+    * @param Request $request
+    * @param EntityManagerInterface $manager
+    * @return Response
+    */
+    #[Security("is_granted('ROLE_USER') and user === recipe.getUser()")]
     #[Route('/recette/edition/{id}', 'recipe.edit', methods: ['GET', 'POST'])]
-    /**
-     *  this controller allow us to edit recipes
-     *
-     * @param IngredientRepository $repository
-     * @param integer $id
-     * @param Request $request
-     * @param EntityManagerInterface $manager
-     * @return Response
-     */
+   
     public function edit(
-        RecipeRepository $repository, 
+        Recipe $recipe, 
         int $id, Request $request, 
         EntityManagerInterface $manager
         ): Response
     {
-        $recipe = $repository->findOneBy(["id" => $id]);
+        // $recipe = $repository->findOneBy(["id" => $id]);
         $form = $this->createForm(RecipeType::class, $recipe);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
